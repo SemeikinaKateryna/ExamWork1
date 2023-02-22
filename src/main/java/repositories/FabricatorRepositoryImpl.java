@@ -1,7 +1,6 @@
 package repositories;
 
 import entity.Fabricator;
-import entity.Souvenir;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -18,6 +17,7 @@ public class FabricatorRepositoryImpl implements FabricatorRepository{
                     Fabricator temp = new Fabricator();
                     temp.setName(newLines[0]);
                     temp.setCountry(newLines[1]);
+                    temp.setPaymentDetails(newLines[2]);
                     fabricators.add(temp);
                 }
             }
@@ -29,13 +29,13 @@ public class FabricatorRepositoryImpl implements FabricatorRepository{
 
     @Override
     public boolean add(Fabricator fabricator){
-        try(FileWriter writer = new FileWriter(FABRICATORS, true);
-            PrintWriter pw = new PrintWriter(writer);
-            BufferedReader br = new BufferedReader(new FileReader(FABRICATORS))) {
+        try( FileWriter writer = new FileWriter(FABRICATORS, true);
+            BufferedReader br = new BufferedReader(new FileReader(FABRICATORS)) ){
             if (br.readLine() != null) {
-                pw.print("\n");
+                writer.write("\n");
             }
-            pw.print(fabricator.getName() + "-" + fabricator.getCountry());
+            writer.write(fabricator.getName() + "-" + fabricator.getCountry() + "-"
+            + fabricator.getPaymentDetails());
             return true;
         } catch (IOException e){
             e.printStackTrace();
@@ -51,28 +51,26 @@ public class FabricatorRepositoryImpl implements FabricatorRepository{
                 fabricator = f;
             }
         }
-        if(fabricator == null) {
-            System.out.println("Нет производителей с заданым именем");
-        }
         return fabricator;
     }
     @Override
-    public boolean update(String name, String newName, String country){
+    public boolean update(String name, String newName, String country, String paymentDetails) {
         List<Fabricator> fabricators = read();
         Fabricator byName = getByName(name);
-        if(byName == null){
+        if (byName == null) {
             return false;
         }
         for (Fabricator f : fabricators) {
-            if (Objects.equals(f.getName(),name)) {
+            if (Objects.equals(f.getName(), name)) {
                 f.setName(newName);
                 f.setCountry(country);
+                f.setPaymentDetails(paymentDetails);
             }
         }
-        try (FileWriter writer = new FileWriter(FABRICATORS);
-             PrintWriter pw = new PrintWriter(writer)) {
+        try (FileWriter writer = new FileWriter(FABRICATORS)) {
             for (Fabricator fabricator : fabricators) {
-                pw.print(fabricator.getName() + "-" + fabricator.getCountry() + "\n");
+                writer.write(fabricator.getName() + "-" + fabricator.getCountry() + "-"
+                        + fabricator.getPaymentDetails() + "\n");
             }
             return true;
         } catch (IOException e) {
@@ -94,7 +92,8 @@ public class FabricatorRepositoryImpl implements FabricatorRepository{
         }
         try (FileWriter writer = new FileWriter(FABRICATORS)) {
             for (Fabricator fabricator : fabricators) {
-                writer.write( fabricator.getName() + "-" + fabricator.getCountry() + "\n");
+                writer.write(fabricator.getName() + "-" + fabricator.getCountry() + "-"
+                        + fabricator.getPaymentDetails() + "\n");
             }
             return true;
         } catch (IOException e) {

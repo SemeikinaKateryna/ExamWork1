@@ -37,15 +37,13 @@ public class SouvenirReporitoryImpl implements SouvenirRepository {
     @Override
     public boolean add(Souvenir souvenir) {
         try (FileWriter writer = new FileWriter(SOUVENIRS, true);
-             PrintWriter pw = new PrintWriter(writer);
              BufferedReader br = new BufferedReader(new FileReader(SOUVENIRS))) {
             if (br.readLine() != null) {
-                pw.print("\n");
+                writer.write("\n");
             }
-            pw.print(souvenir.getVendorCode() + "_" + souvenir.getName() + "_" + souvenir.getPaymentDetails() + "_"
+            writer.write(souvenir.getVendorCode() + "_" + souvenir.getName() + "_" + souvenir.getPaymentDetails() + "_"
                     + souvenir.getDateOfIssue().getDayOfMonth()+ "." + souvenir.getDateOfIssue().getMonth().getValue() + "."
                     + souvenir.getDateOfIssue().getYear() + "_" + souvenir.getPrice() + "_" + souvenir.getCurrency());
-            System.out.println(souvenir.getDateOfIssue().getYear());
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -58,12 +56,9 @@ public class SouvenirReporitoryImpl implements SouvenirRepository {
         Souvenir souvenir = null;
         List<Souvenir> souvenirs = read();
         for (Souvenir s : souvenirs) {
-            if (s.getVendorCode().equals(vendorCode)) {
+            if (Objects.equals(s.getVendorCode(), vendorCode)) {
                 souvenir = s;
             }
-        }
-        if (souvenir == null) {
-            System.out.println("Нет сувениров с заданим штрих-кодом");
         }
         return souvenir;
     }
@@ -85,10 +80,9 @@ public class SouvenirReporitoryImpl implements SouvenirRepository {
                 s.setCurrency(currency);
             }
         }
-        try (FileWriter writer = new FileWriter(SOUVENIRS);
-             PrintWriter pw = new PrintWriter(writer)) {
+        try (FileWriter writer = new FileWriter(SOUVENIRS)) {
             for (Souvenir souvenir : souvenirs) {
-                pw.print(souvenir.getVendorCode() + "_" + souvenir.getName() + "_" + souvenir.getPaymentDetails() + "_"
+                writer.write(souvenir.getVendorCode() + "_" + souvenir.getName() + "_" + souvenir.getPaymentDetails() + "_"
                         + souvenir.getDateOfIssue().getDayOfMonth() + "." + souvenir.getDateOfIssue().getMonth().getValue() + "."
                         + souvenir.getDateOfIssue().getYear() + "_" + souvenir.getPrice() + "_" + souvenir.getCurrency() + "\n");
             }
@@ -107,7 +101,7 @@ public class SouvenirReporitoryImpl implements SouvenirRepository {
             return false;
         }
         for (int i = 0; i < souvenirs.size(); i++) {
-            if (souvenirs.get(i).getVendorCode().equals(vendorCode)) {
+            if (Objects.equals(souvenirs.get(i).getVendorCode(),vendorCode)) {
                 souvenirs.remove(souvenirs.get(i));
             }
         }

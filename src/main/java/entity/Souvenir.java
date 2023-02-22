@@ -21,7 +21,6 @@ public class Souvenir {
                     double price, String currency) {
         this.name = name;
         this.vendorCode = this.name.charAt(0) + "" + (int) (Math.random()*100 + 1);
-
         this.paymentDetails = paymentDetails;
         this.dateOfIssue = dateOfIssue;
         this.price = price;

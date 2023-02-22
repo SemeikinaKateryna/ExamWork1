@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class Fabricator {
     String name;
     String country;
+    String paymentDetails;
 }
