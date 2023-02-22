@@ -12,6 +12,6 @@ public interface FabricatorRepository {
     List<Fabricator> read();
     boolean add(Fabricator fabricator);
     Fabricator getByName(String name);
-//    boolean update(String name, String newName, String country);
-//    boolean delete();
+    boolean update(String name, String newName, String country);
+    boolean delete(String name);
 }

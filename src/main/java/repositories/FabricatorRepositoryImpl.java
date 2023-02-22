@@ -42,6 +42,7 @@ public class FabricatorRepositoryImpl implements FabricatorRepository{
             return false;
         }
     }
+    @Override
     public Fabricator getByName(String name){
         Fabricator fabricator = null;
         List<Fabricator> fabricators = read();
@@ -55,6 +56,50 @@ public class FabricatorRepositoryImpl implements FabricatorRepository{
         }
         return fabricator;
     }
-//    public boolean update(String name, String newName, String country);
-//    public boolean delete();
+    @Override
+    public boolean update(String name, String newName, String country){
+        List<Fabricator> fabricators = read();
+        Fabricator byName = getByName(name);
+        if(byName == null){
+            return false;
+        }
+        for (Fabricator f : fabricators) {
+            if (Objects.equals(f.getName(),name)) {
+                f.setName(newName);
+                f.setCountry(country);
+            }
+        }
+        try (FileWriter writer = new FileWriter(FABRICATORS);
+             PrintWriter pw = new PrintWriter(writer)) {
+            for (Fabricator fabricator : fabricators) {
+                pw.print(fabricator.getName() + "-" + fabricator.getCountry() + "\n");
+            }
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    @Override
+    public boolean delete(String name){
+        List<Fabricator> fabricators = read();
+        Fabricator byName = getByName(name);
+        if(byName == null){
+            return false;
+        }
+        for (int i = 0; i < fabricators.size(); i++) {
+            if (Objects.equals(fabricators.get(i).getName(), name)) {
+                fabricators.remove(fabricators.get(i));
+            }
+        }
+        try (FileWriter writer = new FileWriter(FABRICATORS)) {
+            for (Fabricator fabricator : fabricators) {
+                writer.write( fabricator.getName() + "-" + fabricator.getCountry() + "\n");
+            }
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
