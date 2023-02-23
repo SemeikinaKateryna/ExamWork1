@@ -8,16 +8,16 @@ import repositories.FabricatorRepository;
 import repositories.FabricatorRepositoryImpl;
 import repositories.SouvenirReporitoryImpl;
 import repositories.SouvenirRepository;
+import util.PriceConventor;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 public class Menu {
     public static final int ADD_FABRICATOR = 1;
     public static final int UPDATE_FABRICATOR = 2;
     public static final int SHOW_ALL_FABRICATORS = 3;
     public static final int ADD_SOUVENIR = 4;
-    public static final int UPDATE_SOUVENIR  = 5;
+    public static final int UPDATE_SOUVENIR = 5;
     public static final int SHOW_ALL_SOUVENIRS = 6;
     public static final int SHOW_SOUVENIRS_BY_FABRICATOR = 7;
     public static final int SHOW_SOUVENIRS_BY_COUNTRY = 8;
@@ -40,7 +40,7 @@ public class Menu {
         input = new Input();
     }
 
-    private int menu(){
+    private int menu() {
         System.out.println("""
                 1.  ADD_FABRICATOR
                 2.  UPDATE_FABRICATOR
@@ -60,16 +60,14 @@ public class Menu {
         scanner.nextLine();
         return res;
     }
-    public void run(){
+
+    public void run() {
         int choice;
         while ((choice = menu()) != 0) {
-
-            //считывание с файла
-
             switch (choice) {
                 case ADD_FABRICATOR -> {
                     boolean flag = fabricatorRepository.add(input.inputFabricator());
-                    if(!flag){
+                    if (!flag) {
                         input.showMessage("This fabricator is already exists");
                     }
                 }
@@ -77,15 +75,15 @@ public class Menu {
                 case UPDATE_FABRICATOR -> {
                     input.showMessage("What fabricator do you want to update?");
                     String name = input.input("fabricator name");
-                    if(fabricatorRepository.getByName(name) != null) {
+                    if (fabricatorRepository.getByName(name) != null) {
                         System.out.println(fabricatorRepository.getByName(name));
                         Fabricator newFabricator = input.inputFabricator();
-                        if(!fabricatorRepository.update
+                        if (!fabricatorRepository.update
                                 (name, newFabricator.getName(), newFabricator.getCountry(),
-                                        newFabricator.getPaymentDetails())){
+                                        newFabricator.getPaymentDetails())) {
                             input.showMessage("This fabricator is already exists");
                         }
-                    }else{
+                    } else {
                         input.showMessage("There are no fabricators with name " + name);
                     }
                 }
@@ -102,9 +100,9 @@ public class Menu {
                     input.showMessage("What souvenir do you want to update?");
                     String vendorCode = input.input("vendor code");
                     Souvenir souvenir = input.inputSouvenir();
-                    if(!souvenirRepository.update (vendorCode, souvenir.getName(),
+                    if (!souvenirRepository.update(vendorCode, souvenir.getName(),
                             souvenir.getPaymentDetails(), souvenir.getDateOfIssue(),
-                            souvenir.getPrice(), souvenir.getCurrency())){
+                            souvenir.getPrice(), souvenir.getCurrency())) {
                         input.showMessage("There are no souvenirs with vendor code " + vendorCode);
                     }
                 }
@@ -116,22 +114,22 @@ public class Menu {
                 case SHOW_SOUVENIRS_BY_FABRICATOR -> {
                     String name = input.input("fabricator name");
                     Fabricator fabricator = fabricatorRepository.getByName(name);
-                    if(fabricator != null) {
+                    if (fabricator != null) {
                         input.showMessage("Souvenirs by " + name + ":");
-                        List<Souvenir> souvenirsByFabricator =  new ArrayList<>();
+                        List<Souvenir> souvenirsByFabricator = new ArrayList<>();
                         Map<String, Souvenir> souvenirMap = souvenirRepository.read();
                         for (Souvenir souvenir : souvenirMap.values()) {
-                            if(Objects.equals(souvenir.getPaymentDetails(),
-                                    fabricator.getPaymentDetails())){
+                            if (Objects.equals(souvenir.getPaymentDetails(),
+                                    fabricator.getPaymentDetails())) {
                                 souvenirsByFabricator.add(souvenir);
                             }
                         }
-                        if(!souvenirsByFabricator.isEmpty()){
+                        if (!souvenirsByFabricator.isEmpty()) {
                             souvenirsByFabricator.forEach(System.out::println);
-                        }else {
+                        } else {
                             input.showMessage("There are no souvenirs for fabricator " + fabricator);
                         }
-                    }else{
+                    } else {
                         input.showMessage("There are no fabricators with name " + name);
                     }
                 }
@@ -140,13 +138,13 @@ public class Menu {
                     String country = input.input("country");
                     List<Fabricator> countryFabricator = new ArrayList<>();
                     Set<Fabricator> fabricatorSet = fabricatorRepository.read();
-                    for (Fabricator fabricator: fabricatorSet) {
-                        if(Objects.equals(fabricator.getCountry(),country)){
+                    for (Fabricator fabricator : fabricatorSet) {
+                        if (Objects.equals(fabricator.getCountry(), country)) {
                             countryFabricator.add(fabricator);
                         }
                     }
-                    if(!countryFabricator.isEmpty()) {
-                        Map<String,Souvenir> souvenirMap = souvenirRepository.read();
+                    if (!countryFabricator.isEmpty()) {
+                        Map<String, Souvenir> souvenirMap = souvenirRepository.read();
                         List<Souvenir> souvenirsByCountry = new ArrayList<>();
                         for (Fabricator fabricator : countryFabricator) {
                             for (Souvenir souvenir : souvenirMap.values()) {
@@ -156,41 +154,142 @@ public class Menu {
                                 }
                             }
                         }
-                        if(souvenirsByCountry.isEmpty()){
+                        if (souvenirsByCountry.isEmpty()) {
                             input.showMessage("There are no souvenirs for country " + country);
-                        }else{
+                        } else {
                             input.showMessage("Souvenirs by " + country + ":");
                             souvenirsByCountry.forEach(System.out::println);
                         }
-                    }else{
+                    } else {
                         input.showMessage("There are no fabricators for country " + country);
                     }
                 }
 
                 case SHOW_FABRICATORS_BY_LESS_SOUVENIR_PRICE -> {
-                    double price = Double.parseDouble(input.input("price"));
-                    Map<String,Souvenir> souvenirMap = souvenirRepository.read();
+                    double price = Double.parseDouble(input.input("price in UAN"));
+                    Map<String, Souvenir> souvenirMap = souvenirRepository.read();
                     Set<Fabricator> fabricatorSet = fabricatorRepository.read();
-                    Stream<Fabricator> fabricatorStream = null;
+                    Set<Fabricator> fabricatorLessPriceSet = new HashSet<>();
+                    PriceConventor conventor = new PriceConventor();
+                    double UANprice;
                     for (Souvenir souvenir : souvenirMap.values()) {
-                        if (souvenir.getPrice() < price) {
-                            fabricatorStream = fabricatorSet.stream()
-                                    .filter(fabr -> fabr.getPaymentDetails().
-                                            equals(souvenir.getPaymentDetails()));
+                        UANprice = 0;
+                        if (souvenir.getCurrency().equals("USD")) {
+                            UANprice = conventor.usdToUan(souvenir.getPrice());
+                        } else if (souvenir.getCurrency().equals("EUR")) {
+                            UANprice = conventor.eurToUan(souvenir.getPrice());
+                        } else {
+                            UANprice = souvenir.getPrice();
+                        }
+                        if (UANprice < price) {
+                            for (Fabricator fabr : fabricatorSet) {
+                                if (Objects.equals(fabr.getPaymentDetails(),
+                                        souvenir.getPaymentDetails())) {
+                                    fabricatorLessPriceSet.add(fabr);
+                                }
+                            }
                         }
                     }
-                    if (fabricatorStream == null){
-                        input.showMessage("There are no fabricators with souvenirs less then " + price);
-                    }else {
-                        fabricatorStream.forEach(System.out::println);
+                    if (fabricatorLessPriceSet.isEmpty()) {
+                        input.showMessage("There are no fabricators with souvenirs less then " + price + "UAN");
+                    } else {
+                        fabricatorLessPriceSet.forEach(System.out::println);
                     }
                 }
 
+                case SHOW_FABRICATORS_AND_THEIR_SOUVENIRS -> {
+                    Map<String, Souvenir> souvenirMap = souvenirRepository.read();
+                    Set<Fabricator> fabricatorSet = fabricatorRepository.read();
+                    for (Fabricator fabricator : fabricatorSet) {
+                        System.out.println(fabricator);
+                        for (Souvenir souvenir : souvenirMap.values()) {
+                            if (Objects.equals(fabricator.getPaymentDetails(),
+                                    souvenir.getPaymentDetails())) {
+                                System.out.println(souvenir);
+                            }
+                        }
+                        System.out.println();
+                    }
+                }
+
+                case SHOW_FABRICATORS_BY_SOUVENIR_AND_YEAR -> {
+                    String souvenirName = input.input("name");
+                    String year = input.input("year");
+                    Map<String, Souvenir> souvenirMap = souvenirRepository.read();
+                    Set<Fabricator> fabricatorSet = fabricatorRepository.read();
+                    List<Fabricator> fabricators = new ArrayList<>();
+                    for (Souvenir souvenir : souvenirMap.values()) {
+                        if (Objects.equals(souvenir.getName(), souvenirName) &&
+                                Objects.equals(souvenir.getDateOfIssue().getYear(), Integer.parseInt(year))) {
+                            for (Fabricator fabricator : fabricatorSet) {
+                                if (Objects.equals(fabricator.getPaymentDetails(),
+                                        souvenir.getPaymentDetails())) {
+                                    fabricators.add(fabricator);
+                                }
+                            }
+                        }
+
+                    }
+                    if (fabricators.isEmpty()) {
+                        input.showMessage("There are no fabricators for souvenir " + souvenirName
+                                + " produced in " + year);
+                    } else {
+                        input.showMessage("Fabricator for souvenir " + souvenirName
+                                + " produced in " + year + ":");
+                        fabricators.forEach(System.out::println);
+                    }
+                }
+
+                case SHOW_SOUVENIRS_BY_YEAR -> {
+                    String year = input.input("year");
+                    Map<String, Souvenir> souvenirMap = souvenirRepository.read();
+                    List<Souvenir> souvenirs = new ArrayList<>();
+                    for (Souvenir souvenir : souvenirMap.values()) {
+                        if (Objects.equals(souvenir.getDateOfIssue().getYear(), Integer.parseInt(year))) {
+                            souvenirs.add(souvenir);
+                        }
+                    }
+                    if (souvenirs.isEmpty()) {
+                        input.showMessage("There are no souvenirs" + " produced in " + year);
+                    } else {
+                        input.showMessage("Souvenirs produced in " + year + ":");
+                        souvenirs.forEach(System.out::println);
+                    }
+                }
+
+                case DELETE_FABRICATOR_AND_THEIR_SOUVENIRS -> {
+                    String fabricator = input.input("fabricator");
+                    Fabricator fabricatorEntity = fabricatorRepository.getByName(fabricator);
+                    if(fabricatorEntity != null) {
+                        String paymentDetails = fabricatorEntity.getPaymentDetails();
+                        fabricatorRepository.delete(fabricator);
+                        if (!souvenirRepository.delete(paymentDetails)) {
+                            input.showMessage("There no souvenirs for fabricator " + fabricator);
+                        }
+                    }else{
+                        input.showMessage("There are no fabricator with name " + fabricator);
+                    }
 
 
+//                    Map<String, Souvenir> souvenirMap = souvenirRepository.read();
+//                    Set<Fabricator> fabricatorSet = fabricatorRepository.read();
+
+//                    for (Fabricator f : fabricatorSet ) {
+//                        if(Objects.equals(f.getName(),fabricator)){
+//                            paymentDetails = f.getPaymentDetails();
+//                            fabricatorSet.remove(f);
+//                            for (Map.Entry<String, Souvenir> entry : souvenirMap.entrySet()) {
+//                                if (Objects.equals
+//                                        (entry.getValue().getPaymentDetails(), paymentDetails)){
+//                                    souvenirMap.remove(entry.getKey());
+//                                }
+//                            }
+//                        }
+//                    }
+
+                }
             }
-
         }
-    }
 
+    }
 }

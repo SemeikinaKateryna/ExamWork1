@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class SouvenirReporitoryImpl implements SouvenirRepository {
     @Override
@@ -92,13 +91,12 @@ public class SouvenirReporitoryImpl implements SouvenirRepository {
     }
 
     @Override
-    public boolean delete(String vendorCode) {
+    public boolean delete(String paymentDetails) {
         Map<String, Souvenir> souvenirs = read();
-        Souvenir byVendorCode = souvenirs.get(vendorCode);
-        if(byVendorCode == null){
+        if(!souvenirs.values().removeIf
+                (value -> Objects.equals(value.getPaymentDetails(),paymentDetails))){
             return false;
         }else {
-            souvenirs.remove(vendorCode);
             return writeToFileWithoutAppend(souvenirs);
         }
     }

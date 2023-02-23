@@ -13,5 +13,5 @@ public interface SouvenirRepository {
     boolean add(Souvenir souvenir);
     boolean update(String vendorCode, String newName, String newPaymentDetails,
                    LocalDate newDateOfIssue, double newPrice, String newCurrency);
-    boolean delete(String vendorCode);
+    boolean delete(String paymentDetails);
 }

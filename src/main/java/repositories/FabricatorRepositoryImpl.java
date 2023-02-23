@@ -5,13 +5,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class FabricatorRepositoryImpl implements FabricatorRepository{
     @Override
     public @NotNull Set<Fabricator> read(){
         Set<Fabricator> fabricators = new HashSet<>();
             try (BufferedReader br = new BufferedReader(new FileReader(FABRICATORS))) {
+                //br.lines().collect(Collectors.joining("\n"));
                 var line = "";
                 while ((line = br.readLine()) != null) {
                     String[] newLines = line.split("-");
@@ -84,14 +84,13 @@ public class FabricatorRepositoryImpl implements FabricatorRepository{
     @Override
     public boolean delete(String name){
         Set<Fabricator> fabricators = read();
-        Fabricator byName = getByName(name);
-        if(byName == null){
-            return false;
-        }
-        fabricators.remove(fabricators.stream().
+        if(!fabricators.remove(fabricators.stream().
                 filter(data -> Objects.equals(data.getName(), name)).
-                findFirst().get());
-        return writeToFileWithoutAppend(fabricators);
+                findFirst().get())){
+            return false;
+        }else{
+            return writeToFileWithoutAppend(fabricators);
+        }
     }
 
     private boolean writeToFileWithoutAppend(Set<Fabricator> fabricators) {
