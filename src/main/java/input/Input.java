@@ -22,11 +22,6 @@ public class Input {
         return new Fabricator(name, country, paymentDetails);
     }
 
-    public String inputFabricatorName() {
-        System.out.println("Enter name:");
-        return scanner.nextLine();
-    }
-
     public Souvenir inputSouvenir() {
         System.out.print("Name: ");
         String name = scanner.nextLine();
@@ -46,8 +41,8 @@ public class Input {
         return new Souvenir(name, paymentDetails, localDate, price, currency);
     }
 
-    public String inputSouvenirVendorCode() {
-        System.out.println("Enter vendor code: ");
+    public String input(String some) {
+        System.out.println("Enter " + some + ":");
         return scanner.nextLine();
     }
 

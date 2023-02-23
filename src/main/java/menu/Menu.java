@@ -36,11 +36,16 @@ public class Menu {
     private Scanner scanner;
     private Input input;
 
+    private List<Souvenir> souvenirList;
+    private List<Fabricator> fabricatorList ;
+
     public Menu() {
         souvenirRepository = new SouvenirReporitoryImpl();
         fabricatorRepository = new FabricatorRepositoryImpl();
         scanner = new Scanner(System.in);
         input = new Input();
+        souvenirList = souvenirRepository.read();
+        fabricatorList = fabricatorRepository.read();
     }
 
     private int menu(){
@@ -70,9 +75,10 @@ public class Menu {
                 case ADD_FABRICATOR -> {
                     fabricatorRepository.add(input.inputFabricator());
                 }
+
                 case UPDATE_FABRICATOR -> {
                     input.showMessage("What fabricator do you want to update? (name)");
-                    String name = input.inputFabricatorName();
+                    String name = input.input("fabricator name");
                     if(fabricatorRepository.getByName(name) != null) {
                         System.out.println(fabricatorRepository.getByName(name));
                         Fabricator newFabricator = input.inputFabricator();
@@ -83,15 +89,18 @@ public class Menu {
                         input.showMessage("There are no fabricators with such name");
                     }
                 }
+
                 case SHOW_ALL_FABRICATORS -> {
                     fabricatorRepository.read().forEach(System.out::println);
                 }
+
                 case ADD_SOUVENIR -> {
                     souvenirRepository.add(input.inputSouvenir());
                 }
+
                 case UPDATE_SOUVENIR -> {
                     input.showMessage("What souvenir do you want to update? (vendor code)");
-                    String vendorCode = input.inputSouvenirVendorCode();
+                    String vendorCode = input.input("vendor code");
                     if(souvenirRepository.getByVendorCode(vendorCode) != null){
                         System.out.println(souvenirRepository.getByVendorCode(vendorCode));
                         Souvenir souvenir = input.inputSouvenir();
@@ -103,14 +112,16 @@ public class Menu {
                         input.showMessage("There are no souvenirs with such vendor code");
                     }
                 }
+
                 case SHOW_ALL_SOUVENIRS -> {
                     souvenirRepository.read().forEach(System.out::println);
                 }
+
                 case SHOW_SOUVENIRS_BY_FABRICATOR -> {
-                    String name = input.inputFabricatorName();
+                    String name = input.input("fabricator name");
                     Fabricator fabricator = fabricatorRepository.getByName(name);
                     if(fabricator != null) {
-                        List<Souvenir> souvenirList = souvenirRepository.read();
+                        input.showMessage("Souvenirs by " + name + ":");
                         List<Souvenir> souvenirsByFabricator = null;
                         for (Souvenir souvenir: souvenirList) {
                             if(Objects.equals(souvenir.getPaymentDetails(),
@@ -128,6 +139,39 @@ public class Menu {
                         input.showMessage("There are no fabricators with such name");
                     }
                 }
+
+                case SHOW_SOUVENIRS_BY_COUNTRY -> {
+                    String country = input.input("country");
+                    List<Fabricator> countryFabricator = null;
+                    for (Fabricator fabricator: fabricatorList) {
+                        if(Objects.equals(fabricator.getCountry(),country)){
+                            countryFabricator = new ArrayList<>();
+                            countryFabricator.add(fabricator);
+                        }
+                    }
+                    if(countryFabricator != null) {
+                        input.showMessage("Souvenirs by " + country + ":");
+                        for (Fabricator fabricator : countryFabricator) {
+                            for (Souvenir souvenir : souvenirList) {
+                                if (Objects.equals(souvenir.getPaymentDetails(),
+                                        fabricator.getPaymentDetails())) {
+                                    System.out.println(souvenir);
+                                }
+                            }
+                        }
+                    }else{
+                        input.showMessage("There are no souvenirs for such country");
+                    }
+                }
+
+//                case SHOW_FABRICATORS_BY_LESS_SOUVENIR_PRICE -> {
+//                    Double price = Double.valueOf(input.input("price"));
+//                    List
+//                    for (Souvenir souvenir : souvenirList){
+//
+//                    }
+//
+//                }
             }
 
         }
