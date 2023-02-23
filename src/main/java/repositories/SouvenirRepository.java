@@ -4,16 +4,14 @@ import entity.Souvenir;
 
 import java.io.File;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
+import java.util.Map;
 
 public interface SouvenirRepository {
     File SOUVENIRS = new File("Souvenirs.txt");
 
-    List<Souvenir> read();
+    Map<String, Souvenir> read() ;
     boolean add(Souvenir souvenir);
-    Souvenir getByVendorCode(String vendorCode);
-    boolean update(String vendorCode,String name, String paymentDetails, LocalDate dateOfIssue,
-                   double price, String currency);
+    boolean update(String vendorCode, String newName, String newPaymentDetails,
+                   LocalDate newDateOfIssue, double newPrice, String newCurrency);
     boolean delete(String vendorCode);
 }

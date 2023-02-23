@@ -5,11 +5,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class FabricatorRepositoryImpl implements FabricatorRepository{
     @Override
-    public @NotNull List<Fabricator> read(){
-        List<Fabricator> fabricators = new ArrayList<>();
+    public @NotNull Set<Fabricator> read(){
+        Set<Fabricator> fabricators = new HashSet<>();
             try (BufferedReader br = new BufferedReader(new FileReader(FABRICATORS))) {
                 var line = "";
                 while ((line = br.readLine()) != null) {
@@ -29,23 +30,25 @@ public class FabricatorRepositoryImpl implements FabricatorRepository{
 
     @Override
     public boolean add(Fabricator fabricator){
-        try( FileWriter writer = new FileWriter(FABRICATORS, true);
-            BufferedReader br = new BufferedReader(new FileReader(FABRICATORS)) ){
-            if (br.readLine() != null) {
-                writer.write("\n");
+        try( FileWriter writer = new FileWriter(FABRICATORS, true)){
+            Set<Fabricator> fabricators = read();
+            if(fabricators.add(fabricator)){
+                writer.write("\n" + fabricator.getName() + "-" + fabricator.getCountry() + "-"
+                        + fabricator.getPaymentDetails());
+                return true;
+            }else{
+                return false;
             }
-            writer.write(fabricator.getName() + "-" + fabricator.getCountry() + "-"
-            + fabricator.getPaymentDetails());
-            return true;
         } catch (IOException e){
             e.printStackTrace();
             return false;
         }
     }
-    @Override
+
+
     public Fabricator getByName(String name){
         Fabricator fabricator = null;
-        List<Fabricator> fabricators = read();
+        Set<Fabricator> fabricators = read();
         for (Fabricator f : fabricators) {
             if (Objects.equals(f.getName(), name)){
                 fabricator = f;
@@ -53,43 +56,45 @@ public class FabricatorRepositoryImpl implements FabricatorRepository{
         }
         return fabricator;
     }
+
     @Override
-    public boolean update(String name, String newName, String country, String paymentDetails) {
-        List<Fabricator> fabricators = read();
+    public boolean update(String name, String newName, String newCountry,
+                          String newPaymentDetails) {
+        Set<Fabricator> fabricators = read();
         Fabricator byName = getByName(name);
         if (byName == null) {
             return false;
         }
-        for (Fabricator f : fabricators) {
-            if (Objects.equals(f.getName(), name)) {
-                f.setName(newName);
-                f.setCountry(country);
-                f.setPaymentDetails(paymentDetails);
-            }
-        }
-        try (FileWriter writer = new FileWriter(FABRICATORS)) {
-            for (Fabricator fabricator : fabricators) {
-                writer.write(fabricator.getName() + "-" + fabricator.getCountry() + "-"
-                        + fabricator.getPaymentDetails() + "\n");
-            }
+        Fabricator f = fabricators.stream().
+                filter(data -> Objects.equals(data.getName(), name)).
+                findFirst().get();
+        Fabricator temp = f;
+        temp.setName(newName);
+        temp.setCountry(newCountry);
+        temp.setPaymentDetails(newPaymentDetails);
+        if(fabricators.add(temp)){
+            fabricators.remove(f);
+            writeToFileWithoutAppend(fabricators);
             return true;
-        } catch (IOException e) {
-            e.printStackTrace();
+        }else {
             return false;
         }
     }
+
     @Override
     public boolean delete(String name){
-        List<Fabricator> fabricators = read();
+        Set<Fabricator> fabricators = read();
         Fabricator byName = getByName(name);
         if(byName == null){
             return false;
         }
-        for (int i = 0; i < fabricators.size(); i++) {
-            if (Objects.equals(fabricators.get(i).getName(), name)) {
-                fabricators.remove(fabricators.get(i));
-            }
-        }
+        fabricators.remove(fabricators.stream().
+                filter(data -> Objects.equals(data.getName(), name)).
+                findFirst().get());
+        return writeToFileWithoutAppend(fabricators);
+    }
+
+    private boolean writeToFileWithoutAppend(Set<Fabricator> fabricators) {
         try (FileWriter writer = new FileWriter(FABRICATORS)) {
             for (Fabricator fabricator : fabricators) {
                 writer.write(fabricator.getName() + "-" + fabricator.getCountry() + "-"

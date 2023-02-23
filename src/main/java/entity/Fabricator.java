@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class Fabricator {
-    String name;
-    String country;
-    String paymentDetails;
+    private String name;
+    private String country;
+    private String paymentDetails;
 }
