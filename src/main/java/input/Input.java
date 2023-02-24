@@ -6,6 +6,12 @@ import entity.Souvenir;
 import java.time.LocalDate;
 import java.util.Scanner;
 
+/**
+ * Class Input is designed for input.
+ * Contains helper methods for simple input,
+ * input of object field values and for displaying messages.
+ */
+
 public class Input {
     Scanner scanner;
     public Input() {

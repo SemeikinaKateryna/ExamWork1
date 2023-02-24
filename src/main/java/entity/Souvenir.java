@@ -6,6 +6,10 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+/**
+ * Class Souvenir describes souvenir
+ */
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data

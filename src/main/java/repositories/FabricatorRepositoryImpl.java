@@ -6,6 +6,10 @@ import org.jetbrains.annotations.NotNull;
 import java.io.*;
 import java.util.*;
 
+/**
+ * Class FabricatorRepositoryImpl implements all functions of class FabricatorRepository.
+ */
+
 public class FabricatorRepositoryImpl implements FabricatorRepository{
     @Override
     public @NotNull Set<Fabricator> read(){
@@ -20,7 +24,6 @@ public class FabricatorRepositoryImpl implements FabricatorRepository{
                     temp.setPaymentDetails(newLines[2]);
                     fabricators.add(temp);
                 }
-                //NoEndLine.noEndLine(String.valueOf(FABRICATORS));
             }
             catch (IOException e) {
                 e.printStackTrace();

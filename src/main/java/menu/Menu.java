@@ -5,11 +5,17 @@ import entity.Souvenir;
 import input.Input;
 import repositories.FabricatorRepository;
 import repositories.FabricatorRepositoryImpl;
-import repositories.SouvenirReporitoryImpl;
+import repositories.SouvenirRepositoryImpl;
 import repositories.SouvenirRepository;
-import util.PriceConventor;
+import util.PriceConverter;
 
 import java.util.*;
+
+/**
+ * Class Menu is designed for display of all program functions.
+ * This class contains choice variables
+ * and methods which works with objects through their repositories.
+ */
 
 public class Menu {
     public static final int ADD_FABRICATOR = 1;
@@ -32,7 +38,7 @@ public class Menu {
     private final Input input;
 
     public Menu() {
-        souvenirRepository = new SouvenirReporitoryImpl();
+        souvenirRepository = new SouvenirRepositoryImpl();
         fabricatorRepository = new FabricatorRepositoryImpl();
         input = new Input();
     }
@@ -196,7 +202,7 @@ public class Menu {
         Map<String, Souvenir> souvenirMap = souvenirRepository.read();
         Set<Fabricator> fabricatorSet = fabricatorRepository.read();
         Set<Fabricator> fabricatorLessPriceSet = new HashSet<>();
-        PriceConventor conventor = new PriceConventor();
+        PriceConverter conventor = new PriceConverter();
         double UANprice;
         for (Souvenir souvenir : souvenirMap.values()) {
             UANprice = 0;

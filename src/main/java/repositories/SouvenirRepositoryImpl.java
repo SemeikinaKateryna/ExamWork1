@@ -7,7 +7,11 @@ import java.io.*;
 import java.time.LocalDate;
 import java.util.*;
 
-public class SouvenirReporitoryImpl implements SouvenirRepository {
+/**
+ * Class SouvenirRepositoryImpl implements all functions of class SouvenirRepository
+ */
+
+public class SouvenirRepositoryImpl implements SouvenirRepository {
     @Override
     public @NotNull Map<String, Souvenir> read() {
         Map<String, Souvenir> souvenirs = new HashMap<>();
@@ -39,9 +43,9 @@ public class SouvenirReporitoryImpl implements SouvenirRepository {
             writer.write("\n"
                     + souvenir.getName().charAt(0)
                     + "" + (int) (Math.random()*100 + 1) + "_"
-                    /** every souvenir has vendor code ,
-                     * so my souvenirs has vendor code
-                     * first letter of name + random number in [1,100] */
+                    // Every souvenir has vendor code ,
+                    // so my souvenirs has vendor code
+                    // first letter of name + random number in [1,100]
                     + souvenir.getName() + "_"
                     + souvenir.getPaymentDetails() + "_"
                     + souvenir.getDateOfIssue().getDayOfMonth()+ "."
@@ -61,8 +65,7 @@ public class SouvenirReporitoryImpl implements SouvenirRepository {
                           LocalDate newDateOfIssue, double newPrice, String newCurrency) {
         Map<String, Souvenir> souvenirs = read();
         Souvenir souvenir = souvenirs.get(vendorCode);
-        /** vendor code is a key ,
-         * so it cannot be changed*/
+        // Vendor code is a key, so it cannot be changed
         if(souvenir != null){
             souvenir.setName(newName);
             souvenir.setPaymentDetails(newPaymentDetails);
