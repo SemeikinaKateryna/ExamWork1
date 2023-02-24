@@ -16,12 +16,10 @@ public interface FabricatorRepository {
     Set<Fabricator> read();
     boolean add(Fabricator fabricator);
 
-    /**
-     * The optional function of Fabricator's name search added by me
-     * is intended for convenient work with the program.
-     * Editing and deleting an object occurs by name.
-     */
+    /**The function of Fabricator's name search added to convenient work.*/
     Fabricator getByName(String name);
+
+    /**Editing and deleting an object occurs by name.*/
     boolean update(String name, String newName, String newCountry, String newPaymentDetails);
     boolean delete(String name);
 }

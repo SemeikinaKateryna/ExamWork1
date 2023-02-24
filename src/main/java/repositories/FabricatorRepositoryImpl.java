@@ -98,6 +98,11 @@ public class FabricatorRepositoryImpl implements FabricatorRepository{
         }
     }
 
+    /**
+     * This function write to file collection without append.
+     * It's a helper function, that helps to avoid code duplication
+     * in delete and update methods.
+     */
     private boolean writeToFileWithoutAppend(Set<Fabricator> fabricators) {
         try (FileWriter writer = new FileWriter(FABRICATORS)) {
             int counter = 0;

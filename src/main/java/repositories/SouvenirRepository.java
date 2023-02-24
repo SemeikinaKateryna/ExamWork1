@@ -14,15 +14,9 @@ import java.util.Map;
 public interface SouvenirRepository {
     File SOUVENIRS = new File("Souvenirs.txt");
 
-    /**
-     * Vendor code is a key of the Souvenir's map
-     */
+    /**Vendor code is a key of the Souvenir's map*/
     Map<String, Souvenir> read() ;
     boolean add(Souvenir souvenir);
-
-    /**
-     * Souvenirs will be updated and deleted by vendor code.
-     */
     boolean update(String vendorCode, String newName, String newPaymentDetails,
                    LocalDate newDateOfIssue, double newPrice, String newCurrency);
     boolean delete(String paymentDetails);

@@ -90,6 +90,11 @@ public class SouvenirRepositoryImpl implements SouvenirRepository {
         }
     }
 
+    /**
+     * This function write to file collection without append.
+     * It's a helper function, that helps to avoid code duplication
+     * in delete and update methods.
+     */
     private boolean writeToFileWithoutAppend(Map<String, Souvenir> souvenirs){
         try (FileWriter writer = new FileWriter(SOUVENIRS)) {
             int counter = 0;
