@@ -39,6 +39,9 @@ public class SouvenirReporitoryImpl implements SouvenirRepository {
             writer.write("\n"
                     + souvenir.getName().charAt(0)
                     + "" + (int) (Math.random()*100 + 1) + "_"
+                    /** every souvenir has vendor code ,
+                     * so my souvenirs has vendor code
+                     * first letter of name + random number in [1,100] */
                     + souvenir.getName() + "_"
                     + souvenir.getPaymentDetails() + "_"
                     + souvenir.getDateOfIssue().getDayOfMonth()+ "."
@@ -53,30 +56,13 @@ public class SouvenirReporitoryImpl implements SouvenirRepository {
         }
     }
 
-    private boolean writeToFileWithoutAppend(Map<String, Souvenir> souvenirs){
-        try (FileWriter writer = new FileWriter(SOUVENIRS)) {
-            for (Map.Entry<String, Souvenir> entry : souvenirs.entrySet()){
-                writer.write(entry.getKey() + "_"
-                        + entry.getValue().getName() + "_"
-                        + entry.getValue().getPaymentDetails() + "_"
-                        + entry.getValue().getDateOfIssue().getDayOfMonth() + "."
-                        + entry.getValue().getDateOfIssue().getMonth().getValue() + "."
-                        + entry.getValue().getDateOfIssue().getYear() + "_"
-                        + entry.getValue().getPrice() + "_"
-                        + entry.getValue().getCurrency() + "\n");
-            }
-
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
     @Override
     public boolean update(String vendorCode, String newName, String newPaymentDetails,
                           LocalDate newDateOfIssue, double newPrice, String newCurrency) {
         Map<String, Souvenir> souvenirs = read();
         Souvenir souvenir = souvenirs.get(vendorCode);
+        /** vendor code is a key ,
+         * so it cannot be changed*/
         if(souvenir != null){
             souvenir.setName(newName);
             souvenir.setPaymentDetails(newPaymentDetails);
@@ -98,6 +84,30 @@ public class SouvenirReporitoryImpl implements SouvenirRepository {
             return false;
         }else {
             return writeToFileWithoutAppend(souvenirs);
+        }
+    }
+
+    private boolean writeToFileWithoutAppend(Map<String, Souvenir> souvenirs){
+        try (FileWriter writer = new FileWriter(SOUVENIRS)) {
+            int counter = 0;
+            for (Map.Entry<String, Souvenir> entry : souvenirs.entrySet()){
+                counter++;
+                writer.write(entry.getKey() + "_"
+                        + entry.getValue().getName() + "_"
+                        + entry.getValue().getPaymentDetails() + "_"
+                        + entry.getValue().getDateOfIssue().getDayOfMonth() + "."
+                        + entry.getValue().getDateOfIssue().getMonth().getValue() + "."
+                        + entry.getValue().getDateOfIssue().getYear() + "_"
+                        + entry.getValue().getPrice() + "_"
+                        + entry.getValue().getCurrency());
+                if(counter != souvenirs.size()) {
+                    writer.write("\n");
+                }
+            }
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }

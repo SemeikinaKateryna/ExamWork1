@@ -11,7 +11,6 @@ public class FabricatorRepositoryImpl implements FabricatorRepository{
     public @NotNull Set<Fabricator> read(){
         Set<Fabricator> fabricators = new HashSet<>();
             try (BufferedReader br = new BufferedReader(new FileReader(FABRICATORS))) {
-                //br.lines().collect(Collectors.joining("\n"));
                 var line = "";
                 while ((line = br.readLine()) != null) {
                     String[] newLines = line.split("-");
@@ -21,6 +20,7 @@ public class FabricatorRepositoryImpl implements FabricatorRepository{
                     temp.setPaymentDetails(newLines[2]);
                     fabricators.add(temp);
                 }
+                //NoEndLine.noEndLine(String.valueOf(FABRICATORS));
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -33,7 +33,9 @@ public class FabricatorRepositoryImpl implements FabricatorRepository{
         try( FileWriter writer = new FileWriter(FABRICATORS, true)){
             Set<Fabricator> fabricators = read();
             if(fabricators.add(fabricator)){
-                writer.write("\n" + fabricator.getName() + "-" + fabricator.getCountry() + "-"
+                writer.write("\n"
+                        + fabricator.getName() + "-"
+                        + fabricator.getCountry() + "-"
                         + fabricator.getPaymentDetails());
                 return true;
             }else{
@@ -95,9 +97,14 @@ public class FabricatorRepositoryImpl implements FabricatorRepository{
 
     private boolean writeToFileWithoutAppend(Set<Fabricator> fabricators) {
         try (FileWriter writer = new FileWriter(FABRICATORS)) {
+            int counter = 0;
             for (Fabricator fabricator : fabricators) {
+                counter++;
                 writer.write(fabricator.getName() + "-" + fabricator.getCountry() + "-"
-                        + fabricator.getPaymentDetails() + "\n");
+                            + fabricator.getPaymentDetails());
+                if(counter != fabricators.size()) {
+                    writer.write("\n");
+                }
             }
             return true;
         } catch (IOException e) {
