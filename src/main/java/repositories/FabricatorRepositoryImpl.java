@@ -51,12 +51,12 @@ public class FabricatorRepositoryImpl implements FabricatorRepository{
     }
 
 
-    public Fabricator getByName(String name){
-        Fabricator fabricator = null;
+    public Optional<Fabricator> getByName(String name){
+        Optional<Fabricator> fabricator = Optional.empty();
         Set<Fabricator> fabricators = read();
         for (Fabricator f : fabricators) {
             if (Objects.equals(f.getName(), name)){
-                fabricator = f;
+                fabricator = Optional.of(f);
             }
         }
         return fabricator;
@@ -66,10 +66,13 @@ public class FabricatorRepositoryImpl implements FabricatorRepository{
     public boolean update(String name, String newName, String newCountry,
                           String newPaymentDetails) {
         Set<Fabricator> fabricators = read();
-        Fabricator byName = getByName(name);
-        if (byName == null) {
+        //Fabricator byName = .get();
+        if(getByName(name).isEmpty()){
             return false;
         }
+//        if (byName == null) {
+//
+//        }
         Fabricator f = fabricators.stream().
                 filter(data -> Objects.equals(data.getName(), name)).
                 findFirst().get();

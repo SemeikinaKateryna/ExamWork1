@@ -147,14 +147,14 @@ public class Menu {
     }
     public void showSouvenirsByFabricator(){
         String name = input.input("fabricator name");
-        Fabricator fabricator = fabricatorRepository.getByName(name);
-        if (fabricator != null) {
+        Optional<Fabricator> fabricator = fabricatorRepository.getByName(name);
+        if (fabricator.isPresent()) {
             input.showMessage("Souvenirs by " + name + ":");
             List<Souvenir> souvenirsByFabricator = new ArrayList<>();
             Map<String, Souvenir> souvenirMap = souvenirRepository.read();
             for (Souvenir souvenir : souvenirMap.values()) {
                 if (Objects.equals(souvenir.getPaymentDetails(),
-                        fabricator.getPaymentDetails())) {
+                        fabricator.get().getPaymentDetails())) {
                     souvenirsByFabricator.add(souvenir);
                 }
             }
@@ -290,9 +290,9 @@ public class Menu {
 
     public void deleteFabricatorAndTheirSouvenirs () {
         String fabricator = input.input("fabricator");
-        Fabricator fabricatorEntity = fabricatorRepository.getByName(fabricator);
-        if (fabricatorEntity != null) {
-            String paymentDetails = fabricatorEntity.getPaymentDetails();
+        Optional<Fabricator> fabricatorEntity = fabricatorRepository.getByName(fabricator);
+        if (fabricatorEntity.isPresent()) {
+            String paymentDetails = fabricatorEntity.get().getPaymentDetails();
             fabricatorRepository.delete(fabricator);
             if (!souvenirRepository.delete(paymentDetails)) {
                 input.showMessage("There no souvenirs for fabricator " + fabricator);
