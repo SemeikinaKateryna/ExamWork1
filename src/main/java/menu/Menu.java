@@ -112,7 +112,7 @@ public class Menu {
     public void updateFabricator () {
         input.showMessage("What fabricator do you want to update?");
         String name = input.input("fabricator name");
-        if (fabricatorRepository.getByName(name) != null) {
+        if (fabricatorRepository.getByName(name).isPresent()) {
             System.out.println(fabricatorRepository.getByName(name));
             Fabricator newFabricator = input.inputFabricator();
             if (!fabricatorRepository.update
