@@ -66,13 +66,9 @@ public class FabricatorRepositoryImpl implements FabricatorRepository{
     public boolean update(String name, String newName, String newCountry,
                           String newPaymentDetails) {
         Set<Fabricator> fabricators = read();
-        //Fabricator byName = .get();
         if(getByName(name).isEmpty()){
             return false;
         }
-//        if (byName == null) {
-//
-//        }
         Fabricator f = fabricators.stream().
                 filter(data -> Objects.equals(data.getName(), name)).
                 findFirst().get();
